@@ -32,7 +32,6 @@ export default function ImageGeneratorPage() {
     const [prompt, setPrompt] = useState<string>('');
     const [images, setImages] = useState<ImageInfo[]>([]); // State to hold multiple images
     const [selectedImageId, setSelectedImageId] = useState<string | null>(null); // ID of the selected image
-    const [isLoading, setIsLoading] = useState<boolean>(false); // Whether or not variations are being generated
     const [error, setError] = useState<string | null>(null); // For displaying errors to user
     const containerRef = useRef<HTMLDivElement>(null); // Ref for the container bounds
 
@@ -235,12 +234,10 @@ export default function ImageGeneratorPage() {
      */
     const handleGenerateVariations = useCallback(async (parentId: string, parentPrompt: string) => {
         setError(null);
-        setIsLoading(true); // Set global loading state
 
         const parentImage = images.find(img => img.id === parentId);
         if (!parentImage) {
             setError("Could not find the parent image.");
-            setIsLoading(false);
             return;
         }
 
@@ -327,8 +324,6 @@ export default function ImageGeneratorPage() {
         } catch (err: any) {
             // Remove all placeholders on unexpected client error
             setImages(prev => prev.filter(img => !placeholderIds.includes(img.id)));
-        } finally {
-            setIsLoading(false);
         }
     }, [images]);
 
@@ -661,7 +656,7 @@ export default function ImageGeneratorPage() {
                         variant="secondary"
                         size="icon"
                         onClick={handleArrangeGrid}
-                        disabled={isLoading || images.length < 2}
+                        disabled={images.length < 2}
                         className="rounded-full shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         title="Arrange" // Updated Tooltip
                     >
